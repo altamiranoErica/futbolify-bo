@@ -28,7 +28,7 @@ public class SpotifyProviderService {
 
     protected static String CLIENT_ID = "ef56629f44be41e895cac7d03141b9e0";
     protected static String CLIENT_SECRET = "7a1a681c2b9a45e48d95a5da81610dd9";
-    protected static URI REDIRECT_URI = SpotifyHttpManager.makeUri("http://localhost:4200/authorize/callback");
+    protected static URI REDIRECT_URI = SpotifyHttpManager.makeUri("http://localhost:4200/space/callback");
 
     @Autowired
     private AccessDataRepository accessDataRepository;
