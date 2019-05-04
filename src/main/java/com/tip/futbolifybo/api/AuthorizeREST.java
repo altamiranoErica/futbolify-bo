@@ -1,22 +1,21 @@
 package com.tip.futbolifybo.api;
 
+import com.tip.futbolifybo.api.response.UserResponse;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Component
 @Path("authorize")
 public class AuthorizeREST {
 
-    @GET
+    @POST
     @Path("login")
     @Produces("application/json;charset=utf-8")
-    public Response register(@QueryParam("token") String code) {
-        String response = "{ 'message' : 'OK' }";
+    public Response register(@FormParam("username") String username,
+                             @FormParam("password") String password) {
+        UserResponse response = new UserResponse("eyJhbGciOiJIUzI1NiJ");
         return Response.ok(response).build();
     }
 }
