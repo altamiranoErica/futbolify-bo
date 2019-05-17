@@ -31,13 +31,13 @@ public class SpaceService {
 
     public List<SpaceResponse> list(){
         Iterable<Space> spaces = this.spaceRepository.findAll();
-        List<SpaceResponse> spaceResults = new ArrayList<>();
+        List<SpaceResponse> response = new ArrayList<>();
 
         for (Space space : spaces) {
-            spaceResults.add(new SpaceResponse(space.getSpaceID(), space.getName()));
+            response.add(new SpaceResponse(space.getSpaceID(), space.getName()));
         }
 
-        return spaceResults;
+        return response;
     }
 
 

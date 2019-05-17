@@ -9,11 +9,16 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Paging;
+import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
+import com.wrapper.spotify.requests.data.search.simplified.SearchTracksRequest;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,14 +40,21 @@ public class SpotifyProviderService {
 
     @Autowired
     private SpaceRepository spaceRepository;
-
-    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
-            .setClientId(CLIENT_ID)
-            .setClientSecret(CLIENT_SECRET)
-            .setRedirectUri(REDIRECT_URI)
-            .build();
+//
+//    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
+//            .setClientId(CLIENT_ID)
+//            .setClientSecret(CLIENT_SECRET)
+//            .setRedirectUri(REDIRECT_URI)
+//            .build();
 
     public Boolean registerSpace(String code, String name){
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setClientId(CLIENT_ID)
+                .setClientSecret(CLIENT_SECRET)
+                .setRedirectUri(REDIRECT_URI)
+                .build();
+
+
         AuthorizationCodeRequest codeRequest = spotifyApi.authorizationCode(code).build();
         AuthorizationCodeCredentials credentials;
         try {
@@ -60,6 +72,49 @@ public class SpotifyProviderService {
         this.accessDataRepository.saveAll(data);
 
         return true;
+    }
+
+    public List<TrackResult> searchTracks(String query, Integer page) {
+        List<TrackResult> result = new ArrayList<>();
+        if(query == null || query.isEmpty()) return result;
+
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setClientId(CLIENT_ID)
+                .setClientSecret(CLIENT_SECRET)
+                .build();
+        ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials()
+                .build();
+
+        ClientCredentials clientCredentials;
+        Paging<Track> trackPaging;
+        try {
+            clientCredentials = clientCredentialsRequest.execute();
+            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
+
+            SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
+                    .offset((page == null) ? 0 : page)
+                    .build();
+            trackPaging = searchTracksRequest.execute();
+        } catch (IOException | SpotifyWebApiException e){
+            e.printStackTrace();
+            return result;
+        }
+
+        for (Track track : trackPaging.getItems()) {
+            TrackResult trackResult = new TrackResult();
+            trackResult.setName(track.getName());
+            trackResult.setUri(track.getUri());
+            trackResult.setId(track.getId());
+            trackResult.setAlbumID(track.getAlbum().getId());
+            trackResult.setAlbumName(track.getAlbum().getName());
+
+            ArtistSimplified[] artists = track.getArtists();
+            if(artists != null && artists.length > 0) trackResult.setArtist(artists[0].getName());
+
+            result.add(trackResult);
+        }
+
+        return result;
     }
 
     public TrackResult getCurrentTrack(Space space) {
@@ -99,13 +154,13 @@ public class SpotifyProviderService {
     }
 
     public Boolean updateSpace(Space space) {
-        SpotifyApi _spotifyApi = new SpotifyApi.Builder()
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setClientId(CLIENT_ID)
                 .setClientSecret(CLIENT_SECRET)
                 .setRefreshToken(space.getAccessData("refreshToken").getValue())
                 .build();
 
-        AuthorizationCodeRefreshRequest codeRefreshRequest = _spotifyApi.authorizationCodeRefresh().build();
+        AuthorizationCodeRefreshRequest codeRefreshRequest = spotifyApi.authorizationCodeRefresh().build();
         AuthorizationCodeCredentials credentials = null;
         try {
             credentials = codeRefreshRequest.execute();
