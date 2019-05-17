@@ -4,6 +4,7 @@ import com.tip.futbolifybo.api.response.GenericResponse;
 import com.tip.futbolifybo.api.response.SpaceResponse;
 import com.tip.futbolifybo.api.response.TrackResponse;
 import com.tip.futbolifybo.model.Space;
+import com.tip.futbolifybo.model.User;
 import com.tip.futbolifybo.repository.SpaceRepository;
 import com.tip.futbolifybo.service.provider.SpotifyProviderService;
 import com.tip.futbolifybo.service.result.TrackResult;
@@ -88,4 +89,5 @@ public class SpaceService {
 
         return spaceResults;
     }
+
 }

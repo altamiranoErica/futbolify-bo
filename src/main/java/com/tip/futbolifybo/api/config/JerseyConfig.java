@@ -3,6 +3,11 @@ package com.tip.futbolifybo.api.config;
 import com.tip.futbolifybo.api.AuthorizeREST;
 import com.tip.futbolifybo.api.CORSResponseFilter;
 import com.tip.futbolifybo.api.SpaceREST;
+import com.tip.futbolifybo.security.api.exceptionmapper.AccessDeniedExceptionMapper;
+import com.tip.futbolifybo.security.api.exceptionmapper.AuthenticationExceptionMapper;
+import com.tip.futbolifybo.security.api.exceptionmapper.AuthenticationTokenRefreshmentExceptionMapper;
+import com.tip.futbolifybo.security.api.resource.AuthenticationResource;
+import com.tip.futbolifybo.service.provider.ObjectMapperProvider;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 
@@ -22,5 +27,13 @@ public class JerseyConfig extends ResourceConfig {
 
         register(SpaceREST.class);
         register(AuthorizeREST.class);
+
+        register(AccessDeniedExceptionMapper.class);
+        register(AuthenticationExceptionMapper.class);
+        register(AuthenticationTokenRefreshmentExceptionMapper.class);
+        register(AuthenticationResource.class);
+
+        register(ObjectMapperProvider.class);
+
     }
 }
