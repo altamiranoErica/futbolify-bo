@@ -6,6 +6,7 @@ public class TrackResult {
     private String uri;
     private String id;
     private String albumID;
+    private String albumName;
     private String artist;
     private String embedCode;
     private Boolean isPlaying;
@@ -41,6 +42,22 @@ public class TrackResult {
 
     public void setAlbumID(String albumID) {
         this.albumID = albumID;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public Boolean getPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(Boolean playing) {
+        isPlaying = playing;
     }
 
     public String getArtist() {

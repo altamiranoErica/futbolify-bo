@@ -11,6 +11,7 @@ public class TrackResponse {
     private String id;
     private String code;
     private String artist;
+    private String album;
     private Boolean isPlaying;
     private Integer progressMS;
 
@@ -21,6 +22,7 @@ public class TrackResponse {
         this.id = result.getId();
         this.code = result.getEmbedCode();
         this.artist = result.getArtist();
+        this.album = result.getAlbumName();
         this.isPlaying = result.getIsPlaying();
         this.progressMS = result.getProgressMS();
     }
@@ -71,5 +73,13 @@ public class TrackResponse {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
     }
 }

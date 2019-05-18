@@ -8,7 +8,6 @@ import org.springframework.context.annotation.ImportResource;
 
 @ComponentScan("com.tip.futbolifybo")
 @SpringBootApplication
-@ImportResource({"classpath*:applicationContext.xml"})
 @EnableAutoConfiguration
 public class Application {
 
