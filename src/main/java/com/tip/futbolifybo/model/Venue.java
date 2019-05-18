@@ -11,33 +11,33 @@ import java.util.UUID;
  * @author cassiomolin
  */
 @Entity
-@Table(name = "spaces")
-public class Space implements Serializable {
+@Table(name = "venues")
+public class Venue implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID spaceID;
+    private UUID venueID;
 
     private String name;
 
     private String provider;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade =  CascadeType.ALL, mappedBy = "space")
+    @OneToMany(fetch = FetchType.LAZY, cascade =  CascadeType.ALL, mappedBy = "venue")
     private List<AccessData> accessData;
 
-    public Space() { }
+    public Venue() { }
 
-    public Space(String name, String provider) {
+    public Venue(String name, String provider) {
         this.name = name;
         this.provider = provider;
     }
 
-    public UUID getSpaceID() {
-        return spaceID;
+    public UUID getVenueID() {
+        return venueID;
     }
 
-    public void setSpaceID(UUID spaceID) {
-        this.spaceID = spaceID;
+    public void setVenueID(UUID venueID) {
+        this.venueID = venueID;
     }
 
     public String getName() {

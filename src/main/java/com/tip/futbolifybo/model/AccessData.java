@@ -16,15 +16,15 @@ public class AccessData implements Serializable {
     private String value;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "space_id", nullable = false)
-    private Space space;
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
 
     public AccessData() { }
 
-    public AccessData(String key, String value, Space space) {
+    public AccessData(String key, String value, Venue venue) {
         this.key = key;
         this.value = value;
-        this.space = space;
+        this.venue = venue;
     }
 
     public UUID getDataID() {
@@ -51,11 +51,11 @@ public class AccessData implements Serializable {
         this.value = value;
     }
 
-    public Space getSpace() {
-        return space;
+    public Venue getVenue() {
+        return venue;
     }
 
-    public void setSpace(Space space) {
-        this.space = space;
+    public void setVenue(Venue venue) {
+        this.venue = venue;
     }
 }

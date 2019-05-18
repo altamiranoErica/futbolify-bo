@@ -1,9 +1,9 @@
 package com.tip.futbolifybo.service.provider;
 
 import com.tip.futbolifybo.model.AccessData;
-import com.tip.futbolifybo.model.Space;
+import com.tip.futbolifybo.model.Venue;
 import com.tip.futbolifybo.repository.AccessDataRepository;
-import com.tip.futbolifybo.repository.SpaceRepository;
+import com.tip.futbolifybo.repository.VenueRepository;
 import com.tip.futbolifybo.service.result.TrackResult;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
@@ -12,6 +12,7 @@ import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredential
 import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Paging;
 import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
@@ -19,7 +20,6 @@ import com.wrapper.spotify.requests.authorization.authorization_code.Authorizati
 import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
 import com.wrapper.spotify.requests.data.search.simplified.SearchTracksRequest;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +33,13 @@ public class SpotifyProviderService {
 
     protected static String CLIENT_ID = "ef56629f44be41e895cac7d03141b9e0";
     protected static String CLIENT_SECRET = "7a1a681c2b9a45e48d95a5da81610dd9";
-    protected static URI REDIRECT_URI = SpotifyHttpManager.makeUri("http://localhost:4200/space/callback");
+    protected static URI REDIRECT_URI = SpotifyHttpManager.makeUri("http://localhost:4200/dashboard/venue/callback");
 
     @Autowired
     private AccessDataRepository accessDataRepository;
 
     @Autowired
-    private SpaceRepository spaceRepository;
+    private VenueRepository venueRepository;
 //
 //    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
 //            .setClientId(CLIENT_ID)
@@ -47,7 +47,7 @@ public class SpotifyProviderService {
 //            .setRedirectUri(REDIRECT_URI)
 //            .build();
 
-    public Boolean registerSpace(String code, String name){
+    public Boolean registerVenue(String code, String name){
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setClientId(CLIENT_ID)
                 .setClientSecret(CLIENT_SECRET)
@@ -63,12 +63,12 @@ public class SpotifyProviderService {
             return false;
         }
 
-        Space space = new Space(name, "SPOTIFY");
-        space = this.spaceRepository.save(space);
+        Venue venue = new Venue(name, "SPOTIFY");
+        venue = this.venueRepository.save(venue);
 
         List<AccessData> data = new ArrayList<>();
-        data.add(new AccessData("accessToken", credentials.getAccessToken(), space));
-        data.add(new AccessData("refreshToken", credentials.getRefreshToken(), space));
+        data.add(new AccessData("accessToken", credentials.getAccessToken(), venue));
+        data.add(new AccessData("refreshToken", credentials.getRefreshToken(), venue));
         this.accessDataRepository.saveAll(data);
 
         return true;
@@ -93,6 +93,7 @@ public class SpotifyProviderService {
 
             SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
                     .offset((page == null) ? 0 : page)
+                    .limit(10)
                     .build();
             trackPaging = searchTracksRequest.execute();
         } catch (IOException | SpotifyWebApiException e){
@@ -108,6 +109,9 @@ public class SpotifyProviderService {
             trackResult.setAlbumID(track.getAlbum().getId());
             trackResult.setAlbumName(track.getAlbum().getName());
 
+            Image[] images = track.getAlbum().getImages();
+            if(images.length > 0) trackResult.setEmbedCode(images[images.length - 1].getUrl());
+
             ArtistSimplified[] artists = track.getArtists();
             if(artists != null && artists.length > 0) trackResult.setArtist(artists[0].getName());
 
@@ -117,11 +121,11 @@ public class SpotifyProviderService {
         return result;
     }
 
-    public TrackResult getCurrentTrack(Space space) {
-        this.updateSpace(space);
+    public TrackResult getCurrentTrack(Venue venue) {
+        this.updateVenue(venue);
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
-                .setAccessToken(space.getAccessData("accessToken").getValue())
+                .setAccessToken(venue.getAccessData("accessToken").getValue())
                 .build();
         GetUsersCurrentlyPlayingTrackRequest currentlyPlayingTrackRequest = spotifyApi
                 .getUsersCurrentlyPlayingTrack()
@@ -153,11 +157,11 @@ public class SpotifyProviderService {
         return trackResult;
     }
 
-    public Boolean updateSpace(Space space) {
+    public Boolean updateVenue(Venue venue) {
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setClientId(CLIENT_ID)
                 .setClientSecret(CLIENT_SECRET)
-                .setRefreshToken(space.getAccessData("refreshToken").getValue())
+                .setRefreshToken(venue.getAccessData("refreshToken").getValue())
                 .build();
 
         AuthorizationCodeRefreshRequest codeRefreshRequest = spotifyApi.authorizationCodeRefresh().build();
@@ -168,8 +172,8 @@ public class SpotifyProviderService {
             return false;
         }
 
-        space.getAccessData("accessToken").setValue(credentials.getAccessToken());
-        this.accessDataRepository.saveAll(space.getAccessData());
+        venue.getAccessData("accessToken").setValue(credentials.getAccessToken());
+        this.accessDataRepository.saveAll(venue.getAccessData());
 
         return true;
     }

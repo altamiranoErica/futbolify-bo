@@ -2,7 +2,7 @@ package com.tip.futbolifybo.api.config;
 
 import com.tip.futbolifybo.api.AuthorizeREST;
 import com.tip.futbolifybo.api.CORSResponseFilter;
-import com.tip.futbolifybo.api.SpaceREST;
+import com.tip.futbolifybo.api.VenueREST;
 import com.tip.futbolifybo.api.TrackREST;
 import com.tip.futbolifybo.security.api.exceptionmapper.AccessDeniedExceptionMapper;
 import com.tip.futbolifybo.security.api.exceptionmapper.AuthenticationExceptionMapper;
@@ -26,7 +26,7 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
         register(CORSResponseFilter.class);
 
-        register(SpaceREST.class);
+        register(VenueREST.class);
         register(TrackREST.class);
         register(AuthorizeREST.class);
 

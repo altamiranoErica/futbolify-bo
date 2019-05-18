@@ -4,17 +4,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.UUID;
 
 @XmlRootElement
-public class SpaceResponse {
+public class VenueResponse {
 
     private String id;
     private String name;
 
     private TrackResponse track;
 
-    public SpaceResponse() { }
+    public VenueResponse() { }
 
-    public SpaceResponse(UUID spaceID, String name) {
-        this.id = spaceID.toString();
+    public VenueResponse(UUID venueID, String name) {
+        this.id = venueID.toString();
         this.name = name;
     }
 
