@@ -1,5 +1,9 @@
 package com.tip.futbolifybo.service.result;
 
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Image;
+import com.wrapper.spotify.model_objects.specification.Track;
+
 public class TrackResult {
 
     private String name;
@@ -92,4 +96,19 @@ public class TrackResult {
         this.progressMS = progressMS;
     }
 
+    public TrackResult loadFewInfo(Track track) {
+        this.setName(track.getName());
+        this.setUri(track.getUri());
+        this.setId(track.getId());
+        this.setAlbumID(track.getAlbum().getId());
+        this.setAlbumName(track.getAlbum().getName());
+
+        Image[] images = track.getAlbum().getImages();
+        if(images.length > 0) this.setEmbedCode(images[images.length - 1].getUrl());
+
+        ArtistSimplified[] artists = track.getArtists();
+        if(artists != null && artists.length > 0) this.setArtist(artists[0].getName());
+
+        return this;
+    }
 }

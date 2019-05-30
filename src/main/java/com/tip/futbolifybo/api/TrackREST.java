@@ -27,4 +27,14 @@ public class TrackREST {
         return Response.ok(tracks).build();
     }
 
+    @GET
+    @Path("random")
+    @Produces("application/json;charset=utf-8")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Response random(@QueryParam("venueID") String venueID,
+                           @QueryParam("count") Integer count) {
+        List<TrackResponse> tracks = this.trackService.getRandom(venueID, count);
+        return Response.ok(tracks).build();
+    }
+
 }

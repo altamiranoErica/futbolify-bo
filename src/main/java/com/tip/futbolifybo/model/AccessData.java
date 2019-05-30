@@ -21,10 +21,9 @@ public class AccessData implements Serializable {
 
     public AccessData() { }
 
-    public AccessData(String key, String value, Venue venue) {
+    public AccessData(String key, String value) {
         this.key = key;
         this.value = value;
-        this.venue = venue;
     }
 
     public UUID getDataID() {

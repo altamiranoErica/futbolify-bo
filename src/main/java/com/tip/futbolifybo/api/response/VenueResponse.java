@@ -1,5 +1,7 @@
 package com.tip.futbolifybo.api.response;
 
+import com.tip.futbolifybo.model.Venue;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.UUID;
 
@@ -8,14 +10,14 @@ public class VenueResponse {
 
     private String id;
     private String name;
+    private String image;
 
     private TrackResponse track;
 
-    public VenueResponse() { }
-
-    public VenueResponse(UUID venueID, String name) {
-        this.id = venueID.toString();
-        this.name = name;
+    public VenueResponse(Venue venue) {
+        this.id = venue.getVenueID().toString();
+        this.name = venue.getName();
+        this.image = venue.getImage();
     }
 
     public String getId() {
@@ -32,6 +34,14 @@ public class VenueResponse {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public TrackResponse getTrack() {

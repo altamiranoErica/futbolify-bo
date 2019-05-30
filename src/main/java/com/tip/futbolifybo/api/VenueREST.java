@@ -1,6 +1,7 @@
 package com.tip.futbolifybo.api;
 
 import com.tip.futbolifybo.api.response.GenericResponse;
+import com.tip.futbolifybo.api.response.PlaylistResponse;
 import com.tip.futbolifybo.api.response.VenueResponse;
 import com.tip.futbolifybo.service.VenueService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +23,20 @@ public class VenueREST {
     @Path("register")
     @Produces("application/json;charset=utf-8")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Response register(@FormParam("code") String code,
+    public Response register(@FormParam("data") String json,
                              @FormParam("name") String name) {
 
-        GenericResponse response = this.venueService.add(code, name);
+        GenericResponse response = this.venueService.add(json);
         return Response.ok(response).build();
     }
 
+    @GET
+    @Path("get_playlist")
+    @Produces("application/json;charset=utf-8")
+    public Response getPlaylist(@QueryParam("venueID") String venueID) {
+        List<PlaylistResponse> venues = this.venueService.getPlaylist(venueID);
+        return Response.ok(venues).build();
+    }
 
     @GET
     @Path("list")

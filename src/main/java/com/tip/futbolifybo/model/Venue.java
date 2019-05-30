@@ -20,6 +20,10 @@ public class Venue implements Serializable {
 
     private String name;
 
+    private String image;
+
+    private String playlistID;
+
     private String provider;
 
     @OneToMany(fetch = FetchType.LAZY, cascade =  CascadeType.ALL, mappedBy = "venue")
@@ -27,8 +31,10 @@ public class Venue implements Serializable {
 
     public Venue() { }
 
-    public Venue(String name, String provider) {
+    public Venue(String name, String image, String playlistID, String provider) {
         this.name = name;
+        this.image = image;
+        this.playlistID = playlistID;
         this.provider = provider;
     }
 
@@ -46,6 +52,22 @@ public class Venue implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPlaylistID() {
+        return playlistID;
+    }
+
+    public void setPlaylistID(String playlistID) {
+        this.playlistID = playlistID;
     }
 
     public String getProvider() {
