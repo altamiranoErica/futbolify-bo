@@ -20,11 +20,17 @@ public class TrackResponse {
     public TrackResponse(TrackResult result) {
         this.name = result.getName();
         this.id = result.getId();
-        this.code = result.getEmbedCode();
+        this.code = result.getCode();
         this.artist = result.getArtist();
         this.album = result.getAlbumName();
         this.isPlaying = result.getIsPlaying();
         this.progressMS = result.getProgressMS();
+    }
+
+    public TrackResponse(String providerID, String name, String image) {
+        this.id = providerID;
+        this.name = name;
+        this.code = image;
     }
 
     public String getName() {

@@ -1,5 +1,8 @@
 package com.tip.futbolifybo.service.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VenueResult {
 
     private String code;

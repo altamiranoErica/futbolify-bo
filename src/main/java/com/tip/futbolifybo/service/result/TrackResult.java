@@ -1,9 +1,11 @@
 package com.tip.futbolifybo.service.result;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
 import com.wrapper.spotify.model_objects.specification.Image;
 import com.wrapper.spotify.model_objects.specification.Track;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TrackResult {
 
     private String name;
@@ -12,9 +14,10 @@ public class TrackResult {
     private String albumID;
     private String albumName;
     private String artist;
-    private String embedCode;
+    private String code;
     private Boolean isPlaying;
     private Integer progressMS;
+    private Integer duration;
 
     public String getName() {
         return name;
@@ -72,12 +75,12 @@ public class TrackResult {
         this.artist = artist;
     }
 
-    public String getEmbedCode() {
-        return embedCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setEmbedCode(String embedCode) {
-        this.embedCode = embedCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public Boolean getIsPlaying() {
@@ -96,6 +99,14 @@ public class TrackResult {
         this.progressMS = progressMS;
     }
 
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
     public TrackResult loadFewInfo(Track track) {
         this.setName(track.getName());
         this.setUri(track.getUri());
@@ -104,10 +115,12 @@ public class TrackResult {
         this.setAlbumName(track.getAlbum().getName());
 
         Image[] images = track.getAlbum().getImages();
-        if(images.length > 0) this.setEmbedCode(images[images.length - 1].getUrl());
+        if(images.length > 0) this.setCode(images[images.length - 1].getUrl());
 
         ArtistSimplified[] artists = track.getArtists();
         if(artists != null && artists.length > 0) this.setArtist(artists[0].getName());
+
+        this.setDuration(track.getDurationMs());
 
         return this;
     }

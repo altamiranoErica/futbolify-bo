@@ -140,9 +140,10 @@ public class SpotifyProviderService {
         trackResult.setUri(currentlyPlaying.getItem().getUri());
         trackResult.setId(currentlyPlaying.getItem().getId());
         trackResult.setAlbumID(currentlyPlaying.getItem().getAlbum().getId());
-        trackResult.setEmbedCode("https://open.spotify.com/embed/track/" + trackResult.getId());
+        trackResult.setCode("https://open.spotify.com/embed/track/" + trackResult.getId());
         trackResult.setIsPlaying(currentlyPlaying.getIs_playing());
         trackResult.setProgressMS(currentlyPlaying.getProgress_ms());
+        trackResult.setDuration(currentlyPlaying.getItem().getDurationMs());
 
         ArtistSimplified[] artists = currentlyPlaying.getItem().getArtists();
         if(artists != null && artists.length > 0) trackResult.setArtist(artists[0].getName());

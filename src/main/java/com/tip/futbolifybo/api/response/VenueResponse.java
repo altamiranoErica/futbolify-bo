@@ -15,7 +15,7 @@ public class VenueResponse {
     private TrackResponse track;
 
     public VenueResponse(Venue venue) {
-        this.id = venue.getVenueID().toString();
+        this.id = venue.getStringVenueID();
         this.name = venue.getName();
         this.image = venue.getImage();
     }

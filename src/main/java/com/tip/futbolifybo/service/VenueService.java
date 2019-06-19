@@ -1,6 +1,5 @@
 package com.tip.futbolifybo.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tip.futbolifybo.api.response.GenericResponse;
 import com.tip.futbolifybo.api.response.PlaylistResponse;
 import com.tip.futbolifybo.api.response.VenueResponse;
@@ -18,14 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class VenueService {
+public class VenueService implements JSONMapperUtil<VenueResult>{
 
     @Autowired
     private ApplicationContext context;
@@ -53,7 +51,7 @@ public class VenueService {
 
 
     public GenericResponse add(String json){
-        VenueResult venueResult = this.getVenueResultFromJSON(json);
+        VenueResult venueResult = this.getResultFromJSON(json, VenueResult.class);
         if(venueResult == null){
             return new GenericResponse("ERROR", "Venue could not be created.");
         }
@@ -88,7 +86,7 @@ public class VenueService {
             if(trackResult != null) {
                 TrackResponse trackResponse = new TrackResponse();
                 trackResponse.setName(trackResult.getName());
-                trackResponse.setCode(trackResult.getEmbedCode());
+                trackResponse.setCode(trackResult.getCode());
                 trackResponse.setArtist(trackResult.getArtist());
                 trackResponse.setPlaying(trackResult.getIsPlaying());
 
@@ -115,20 +113,6 @@ public class VenueService {
         }
 
         return response;
-    }
-
-
-    private VenueResult getVenueResultFromJSON(String productJSON){
-        VenueResult result = null;
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-            result = mapper.readValue(productJSON, VenueResult.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return result;
     }
 
 }

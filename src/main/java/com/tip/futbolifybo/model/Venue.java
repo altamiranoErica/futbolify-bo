@@ -5,11 +5,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Domain model that represents a user.
- *
- * @author cassiomolin
- */
 @Entity
 @Table(name = "venues")
 public class Venue implements Serializable {
@@ -40,6 +35,11 @@ public class Venue implements Serializable {
 
     public UUID getVenueID() {
         return venueID;
+    }
+
+
+    public String getStringVenueID() {
+        return this.venueID.toString();
     }
 
     public void setVenueID(UUID venueID) {

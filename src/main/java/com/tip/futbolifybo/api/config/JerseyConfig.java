@@ -1,9 +1,6 @@
 package com.tip.futbolifybo.api.config;
 
-import com.tip.futbolifybo.api.AuthorizeREST;
-import com.tip.futbolifybo.api.CORSResponseFilter;
-import com.tip.futbolifybo.api.VenueREST;
-import com.tip.futbolifybo.api.TrackREST;
+import com.tip.futbolifybo.api.*;
 import com.tip.futbolifybo.security.api.exceptionmapper.AccessDeniedExceptionMapper;
 import com.tip.futbolifybo.security.api.exceptionmapper.AuthenticationExceptionMapper;
 import com.tip.futbolifybo.security.api.exceptionmapper.AuthenticationTokenRefreshmentExceptionMapper;
@@ -17,7 +14,7 @@ import javax.ws.rs.ApplicationPath;
 /**
  * Jersey configuration class.
  *
- * @author cassiomolin
+ * @author erica_altamirano
  */
 @Component
 @ApplicationPath("api")
@@ -28,6 +25,7 @@ public class JerseyConfig extends ResourceConfig {
 
         register(VenueREST.class);
         register(TrackREST.class);
+        register(PollREST.class);
         register(AuthorizeREST.class);
 
         register(AccessDeniedExceptionMapper.class);
