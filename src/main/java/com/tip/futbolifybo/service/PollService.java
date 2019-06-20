@@ -57,7 +57,7 @@ public class PollService implements JSONMapperUtil<PollResult>{
 
         Venue venue = _venue.get();
 
-        TrackResult currentTrack = this.providerService.getCurrentTrack(venue);
+        TrackResult currentTrack = this.providerService.getCurrentTrackWithPositionIntoPlaylist(venue);
         if(currentTrack == null) {
             return new GenericResponse("ERROR", "They're not listening to anything now!");
         }
@@ -69,9 +69,11 @@ public class PollService implements JSONMapperUtil<PollResult>{
             poll.getTracks().add(new Track(trackResult.getId(), trackResult.getName(), trackResult.getCode()));
         }
 
-        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS();
+        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 30000;
 
         poll.setExpireTime(expireTime);
+        poll.setPositionWinnerTrack(currentTrack.getPosition() + 1);
+
         poll = this.pollRepository.save(poll);
 
         taskScheduler.schedule(new PollTask(this, poll), new Date(System.currentTimeMillis() + expireTime));
@@ -102,7 +104,28 @@ public class PollService implements JSONMapperUtil<PollResult>{
     }
 
     public void finish(Poll poll) {
+        Track track = this.getWinnerTrack(poll.getPollID());
+        if(track == null) return;
+
+        // ----------------> FINALIZAR VOTACIÓN
         poll.setActive(false);
         this.pollRepository.save(poll);
+
+        // ----------------> NOTIFICAR FIN DE VOTACIÓN
+
+        // ----------------> AGREGAR PISTA GANADORA A LA LISTA
+        Boolean response = this.providerService.addTrackToPlaylist(poll.getVenue(), track.getProviderID(), poll.getPositionWinnerTrack());
+        if(!response){
+            System.out.println("ERROR AL AGREGAR PISTA A LA LISTA!\n");
+        }
+    }
+
+    private Track getWinnerTrack(UUID pollID) {
+        List<Track> tracks = this.trackRepository.findTracksByPoll_PollIDOrderByNumberOfVotes(pollID);
+        if (tracks == null || tracks.isEmpty()){
+            return null;
+        }
+
+        return tracks.get(0);
     }
 }

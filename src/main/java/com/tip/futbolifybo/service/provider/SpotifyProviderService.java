@@ -14,11 +14,13 @@ import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.model_objects.miscellaneous.CurrentlyPlaying;
+import com.wrapper.spotify.model_objects.special.SnapshotResult;
 import com.wrapper.spotify.model_objects.specification.*;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
+import com.wrapper.spotify.requests.data.playlists.AddTracksToPlaylistRequest;
 import com.wrapper.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.playlists.GetPlaylistsTracksRequest;
 import com.wrapper.spotify.requests.data.search.simplified.SearchTracksRequest;
@@ -28,8 +30,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class SpotifyProviderService {
@@ -43,12 +47,6 @@ public class SpotifyProviderService {
 
     @Autowired
     private VenueRepository venueRepository;
-//
-//    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
-//            .setClientId(CLIENT_ID)
-//            .setClientSecret(CLIENT_SECRET)
-//            .setRedirectUri(REDIRECT_URI)
-//            .build();
 
     public List<AccessData> getAccessData(String code) throws InvalidVenueDataException {
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
@@ -108,6 +106,57 @@ public class SpotifyProviderService {
         return result;
     }
 
+    public TrackResult getCurrentTrackWithPositionIntoPlaylist(Venue venue) {
+        String token;
+
+        try {
+            token = this.getAccessToken(venue);
+        } catch (InvalidProviderAccess invalidProviderAccess) {
+            return null;
+        }
+
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setAccessToken(token)
+                .build();
+        GetUsersCurrentlyPlayingTrackRequest currentlyPlayingTrackRequest = spotifyApi
+                .getUsersCurrentlyPlayingTrack()
+                .build();
+
+        CurrentlyPlaying currentlyPlaying = null;
+        try {
+            currentlyPlaying = currentlyPlayingTrackRequest.execute();
+        } catch (IOException | SpotifyWebApiException e) {
+            e.printStackTrace();
+        }
+
+        if(currentlyPlaying == null) {
+            return null;
+        }
+
+        GetPlaylistsTracksRequest getPlaylistsTracksRequest = spotifyApi
+                .getPlaylistsTracks(venue.getPlaylistID())
+                .build();
+
+        Paging<PlaylistTrack> playlistTrackPaging;
+        try {
+            playlistTrackPaging = getPlaylistsTracksRequest.execute();
+        } catch (IOException | SpotifyWebApiException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        List<String> tracks = Arrays.asList(playlistTrackPaging.getItems()).stream()
+                .map(playlistTrack -> playlistTrack.getTrack().getId())
+                .collect(Collectors.toList());
+
+        TrackResult trackResult = new TrackResult(currentlyPlaying.getItem(),
+                currentlyPlaying.getIs_playing(),currentlyPlaying.getProgress_ms());
+        trackResult.setPosition(tracks.indexOf(currentlyPlaying.getItem().getId()));
+
+        return trackResult;
+    }
+
+
     public TrackResult getCurrentTrack(Venue venue) {
         String token;
 
@@ -135,20 +184,37 @@ public class SpotifyProviderService {
             return null;
         }
 
-        TrackResult trackResult = new TrackResult();
-        trackResult.setName(currentlyPlaying.getItem().getName());
-        trackResult.setUri(currentlyPlaying.getItem().getUri());
-        trackResult.setId(currentlyPlaying.getItem().getId());
-        trackResult.setAlbumID(currentlyPlaying.getItem().getAlbum().getId());
-        trackResult.setCode("https://open.spotify.com/embed/track/" + trackResult.getId());
-        trackResult.setIsPlaying(currentlyPlaying.getIs_playing());
-        trackResult.setProgressMS(currentlyPlaying.getProgress_ms());
-        trackResult.setDuration(currentlyPlaying.getItem().getDurationMs());
-
-        ArtistSimplified[] artists = currentlyPlaying.getItem().getArtists();
-        if(artists != null && artists.length > 0) trackResult.setArtist(artists[0].getName());
+        TrackResult trackResult = new TrackResult(currentlyPlaying.getItem(),
+                currentlyPlaying.getIs_playing(),currentlyPlaying.getItem().getDurationMs());
 
         return trackResult;
+    }
+
+    public Boolean addTrackToPlaylist(Venue venue, String trackID, Integer positionTrack) {
+        String token;
+
+        try {
+            token = this.getAccessToken(venue);
+        } catch (InvalidProviderAccess invalidProviderAccess) {
+            return null;
+        }
+
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setAccessToken(token)
+                .build();
+        AddTracksToPlaylistRequest addTracksToPlaylistRequest = spotifyApi
+                .addTracksToPlaylist(venue.getPlaylistID(), new String[]{"spotify:track:" + trackID})
+                .position(positionTrack)
+                .build();
+
+        try {
+            addTracksToPlaylistRequest.execute();
+        } catch (IOException | SpotifyWebApiException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     public String getAccessToken(Venue venue) throws InvalidProviderAccess {
@@ -195,7 +261,7 @@ public class SpotifyProviderService {
         }
 
         for (int i = 0; i < count; i++) {
-            Integer trackNumber = new Random().nextInt(playlistTrackPaging.getLimit());
+            Integer trackNumber = new Random().nextInt(playlistTrackPaging.getTotal());
             PlaylistTrack playlistTrack = playlistTrackPaging.getItems()[trackNumber];
 
             TrackResult track = new TrackResult().loadFewInfo(playlistTrack.getTrack());
@@ -204,6 +270,7 @@ public class SpotifyProviderService {
 
         return result;
     }
+
 
     public List<PlaylistResult> getPlaylistFromVenue(Venue venue){
         List<PlaylistResult> result = new ArrayList<>();
@@ -240,4 +307,6 @@ public class SpotifyProviderService {
 
         return result;
     }
+
+
 }

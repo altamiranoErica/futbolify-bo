@@ -18,6 +18,25 @@ public class TrackResult {
     private Boolean isPlaying;
     private Integer progressMS;
     private Integer duration;
+    private Integer position;
+
+    public TrackResult() {
+
+    }
+
+    public TrackResult(Track item, Boolean isPlaying, Integer progressMS) {
+        this.setName(item.getName());
+        this.setUri(item.getUri());
+        this.setId(item.getId());
+        this.setAlbumID(item.getAlbum().getId());
+        this.setCode("https://open.spotify.com/embed/track/" + this.getId());
+        this.setIsPlaying(isPlaying);
+        this.setProgressMS(progressMS);
+        this.setDuration(item.getDurationMs());
+
+        ArtistSimplified[] artists = item.getArtists();
+        if(artists != null && artists.length > 0) this.setArtist(artists[0].getName());
+    }
 
     public String getName() {
         return name;
@@ -105,6 +124,14 @@ public class TrackResult {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public TrackResult loadFewInfo(Track track) {

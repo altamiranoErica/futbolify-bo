@@ -15,6 +15,8 @@ public class Poll implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID pollID;
 
+    private Integer positionWinnerTrack;
+
     private Integer expireTime;
 
     private Timestamp createTime;
@@ -25,7 +27,7 @@ public class Poll implements Serializable {
     @JoinColumn(name = "venue_id", nullable = false)
     private Venue venue;
 
-    @OneToMany(cascade =  CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="poll_id")
     private List<Track> tracks;
 
@@ -85,5 +87,13 @@ public class Poll implements Serializable {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public Integer getPositionWinnerTrack() {
+        return positionWinnerTrack;
+    }
+
+    public void setPositionWinnerTrack(Integer positionWinnerTrack) {
+        this.positionWinnerTrack = positionWinnerTrack;
     }
 }
