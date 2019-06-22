@@ -20,11 +20,6 @@ public class PollResponse {
         this.makeTrackList(poll.getTracks());
     }
 
-    public PollResponse(String pollID, String venueID) {
-        this.id = pollID;
-        this.venueID = venueID;
-    }
-
     private void makeTrackList(List<Track> tracks) {
         this.tracks = new ArrayList<>();
         for (Track track : tracks) {

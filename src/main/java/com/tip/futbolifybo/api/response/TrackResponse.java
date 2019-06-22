@@ -1,5 +1,6 @@
 package com.tip.futbolifybo.api.response;
 
+import com.tip.futbolifybo.model.Track;
 import com.tip.futbolifybo.service.result.TrackResult;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,6 +32,13 @@ public class TrackResponse {
         this.id = providerID;
         this.name = name;
         this.code = image;
+    }
+
+    public TrackResponse(Track track) {
+        this.isPlaying = true;
+        this.id = track.getProviderID();
+        this.code = "https://open.spotify.com/embed/track/" + track.getProviderID();
+        this.name = track.getName();
     }
 
     public String getName() {

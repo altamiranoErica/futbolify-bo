@@ -74,4 +74,5 @@ public class Track implements Serializable {
     public void addVote() {
         this.numberOfVotes += 1;
     }
+
 }

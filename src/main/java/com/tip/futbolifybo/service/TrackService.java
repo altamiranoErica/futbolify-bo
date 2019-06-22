@@ -1,21 +1,14 @@
 package com.tip.futbolifybo.service;
 
-import com.tip.futbolifybo.api.response.GenericResponse;
 import com.tip.futbolifybo.api.response.TrackResponse;
-import com.tip.futbolifybo.model.Track;
 import com.tip.futbolifybo.model.Venue;
-import com.tip.futbolifybo.repository.TrackRepository;
 import com.tip.futbolifybo.repository.VenueRepository;
 import com.tip.futbolifybo.service.provider.SpotifyProviderService;
 import com.tip.futbolifybo.service.result.TrackResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -27,8 +20,6 @@ public class TrackService {
     @Autowired
     private VenueRepository venueRepository;
 
-    @Autowired
-    private TrackRepository trackRepository;
 
     public List<TrackResponse> search(String query, Integer page){
         Iterable<TrackResult> tracks = this.providerService.searchTracks(query, page);
