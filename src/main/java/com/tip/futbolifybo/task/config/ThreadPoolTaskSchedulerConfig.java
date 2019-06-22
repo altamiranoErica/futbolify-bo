@@ -10,11 +10,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @ComponentScan(basePackages="com.tip.futbolifybo.task")
 public class ThreadPoolTaskSchedulerConfig {
 
-    @Bean
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler(){
-        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-        threadPoolTaskScheduler.setPoolSize(5);
-        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
-        return threadPoolTaskScheduler;
-    }
+//    @Bean
+//    public ThreadPoolTaskScheduler threadPoolTaskScheduler(){
+//        ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+//        threadPoolTaskScheduler.setPoolSize(5);
+//        threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+//        return threadPoolTaskScheduler;
+//    }
 }

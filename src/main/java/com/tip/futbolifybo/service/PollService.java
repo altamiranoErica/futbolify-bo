@@ -12,8 +12,10 @@ import com.tip.futbolifybo.service.provider.SpotifyProviderService;
 import com.tip.futbolifybo.service.result.TrackResult;
 import com.tip.futbolifybo.service.result.PollResult;
 import com.tip.futbolifybo.task.PollTask;
+import com.tip.futbolifybo.webSocket.SendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,6 @@ public class PollService implements JSONMapperUtil<PollResult>{
 
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
-
 
     public GenericResponse add(String json) {
         PollResult pollResult = this.getResultFromJSON(json, PollResult.class);
@@ -69,7 +70,7 @@ public class PollService implements JSONMapperUtil<PollResult>{
             poll.getTracks().add(new Track(trackResult.getId(), trackResult.getName(), trackResult.getCode()));
         }
 
-        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 30000;
+        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 15000;
 
         poll.setExpireTime(expireTime);
         poll.setPositionWinnerTrack(currentTrack.getPosition() + 1);
@@ -77,6 +78,9 @@ public class PollService implements JSONMapperUtil<PollResult>{
         poll = this.pollRepository.save(poll);
 
         taskScheduler.schedule(new PollTask(this, poll), new Date(System.currentTimeMillis() + expireTime));
+
+        // ----------------> NOTIFICAR INICIO DE VOTACIÓN
+        SendService.sendPoll("/poll/start_event", new PollResponse(poll));
 
         return new GenericResponse("SUCCESS", "Successfully created poll!");
     }
@@ -112,6 +116,8 @@ public class PollService implements JSONMapperUtil<PollResult>{
         this.pollRepository.save(poll);
 
         // ----------------> NOTIFICAR FIN DE VOTACIÓN
+        PollResponse pollResponse = new PollResponse(poll.getStringPollID(), poll.getVenue().getStringVenueID());
+        SendService.sendPoll("/poll/finish_event", pollResponse);
 
         // ----------------> AGREGAR PISTA GANADORA A LA LISTA
         Boolean response = this.providerService.addTrackToPlaylist(poll.getVenue(), track.getProviderID(), poll.getPositionWinnerTrack());
