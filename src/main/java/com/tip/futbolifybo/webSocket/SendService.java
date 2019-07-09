@@ -8,8 +8,8 @@ public class SendService {
 
     private static SimpMessagingTemplate template;
 
-    public static void setTemplate(SimpMessagingTemplate tmplt) {
-        template = tmplt;
+    public static void setTemplate(SimpMessagingTemplate _template) {
+        SendService.template = _template;
     }
 
     public static void sendPoll(String path, PollResponse poll) {
