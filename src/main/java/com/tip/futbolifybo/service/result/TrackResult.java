@@ -142,7 +142,7 @@ public class TrackResult {
         this.setAlbumName(track.getAlbum().getName());
 
         Image[] images = track.getAlbum().getImages();
-        if(images.length > 0) this.setCode(images[images.length - 1].getUrl());
+        if(images.length > 0) this.setCode(images[images.length - 2].getUrl());
 
         ArtistSimplified[] artists = track.getArtists();
         if(artists != null && artists.length > 0) this.setArtist(artists[0].getName());

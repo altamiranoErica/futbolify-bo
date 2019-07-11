@@ -36,32 +36,16 @@ public class PersistenceJPAConfig {
         return em;
     }
 
-    private ComboPooledDataSource generateHerokuDatabase(String remote){
-        URI databaseURI = null;
-        try {
-            databaseURI = new URI("postgres://postgres:1q2w3E4R!@localhost:5432/futbolify");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-        String[] userInfo = databaseURI.getUserInfo().split(":");
-        String username = userInfo[0];
-        String password = userInfo[1];
-        String url = "jdbc:postgresql://" + databaseURI.getHost() + ":" + databaseURI.getPort() + databaseURI.getPath();
-
-        ComboPooledDataSource dataSource = new ComboPooledDataSource("db");
-        dataSource.setJdbcUrl(url);
-        dataSource.setUser(username);
-        dataSource.setPassword(password);
-
-        return dataSource;
-    }
-
     @Bean
     public DataSource dataSource(){
+        String databaseURL = System.getenv("DATABASE_URL");
+        if (databaseURL == null){
+            databaseURL = "postgres://postgres:1q2w3E4R!@localhost:5432/futbolify";
+        }
+
         URI databaseURI = null;
         try {
-            databaseURI = new URI("postgres://postgres:1q2w3E4R!@localhost:5432/futbolify");
+            databaseURI = new URI(databaseURL);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

@@ -90,7 +90,7 @@ public class SpotifyProviderService {
 
             SearchTracksRequest searchTracksRequest = spotifyApi.searchTracks(query)
                     .offset((page == null) ? 0 : page)
-                    .limit(10)
+                    .limit(12)
                     .build();
             trackPaging = searchTracksRequest.execute();
         } catch (IOException | SpotifyWebApiException e){

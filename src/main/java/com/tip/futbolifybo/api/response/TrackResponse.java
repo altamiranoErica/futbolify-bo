@@ -28,9 +28,10 @@ public class TrackResponse {
         this.progressMS = result.getProgressMS();
     }
 
-    public TrackResponse(String providerID, String name, String image) {
+    public TrackResponse(String providerID, String name, String artist, String image) {
         this.id = providerID;
         this.name = name;
+        this.artist = artist;
         this.code = image;
     }
 

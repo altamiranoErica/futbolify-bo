@@ -16,6 +16,8 @@ public class Track implements Serializable {
 
     private String name;
 
+    private String artist;
+
     private String image;
 
     private Integer numberOfVotes;
@@ -24,10 +26,11 @@ public class Track implements Serializable {
         this.numberOfVotes = 0;
     }
 
-    public Track(String providerID, String name, String image) {
+    public Track(String providerID, String name, String artist, String image) {
         this();
         this.providerID = providerID;
         this.name = name;
+        this.artist = artist;
         this.image = image;
     }
 
@@ -53,6 +56,14 @@ public class Track implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     public String getImage() {

@@ -65,10 +65,10 @@ public class PollService implements JSONMapperUtil<PollResult>{
         poll.setVenue(venue);
 
         for (TrackResult trackResult : pollResult.getTracks()) {
-            poll.getTracks().add(new Track(trackResult.getId(), trackResult.getName(), trackResult.getCode()));
+            poll.getTracks().add(new Track(trackResult.getId(), trackResult.getName(), trackResult.getArtist(), trackResult.getCode()));
         }
 
-        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 7000;
+        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 10000;
 
         poll.setExpireTime(expireTime);
         poll.setPositionWinnerTrack(currentTrack.getPosition() + 1);

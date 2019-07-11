@@ -23,7 +23,7 @@ public class PollResponse {
     private void makeTrackList(List<Track> tracks) {
         this.tracks = new ArrayList<>();
         for (Track track : tracks) {
-            this.tracks.add(new TrackResponse(track.getProviderID(), track.getName(), track.getImage()));
+            this.tracks.add(new TrackResponse(track.getProviderID(), track.getName(), track.getArtist(), track.getImage()));
         }
     }
 
