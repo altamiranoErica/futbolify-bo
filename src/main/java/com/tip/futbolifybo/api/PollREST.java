@@ -40,7 +40,12 @@ public class PollREST {
     @Produces("application/json;charset=utf-8")
     public Response vote(@FormParam("pollID") String pollID,
                          @FormParam("trackID") String trackID) {
-        GenericResponse response = this.pollService.vote(pollID, trackID);
+        PollResponse response = this.pollService.vote(pollID, trackID);
+        if(response == null){
+            GenericResponse error = new GenericResponse("ERROR", "Selected track does not exist!");
+            return Response.ok(error).status(406).build();
+        }
+
         return Response.ok(response).build();
     }
 }

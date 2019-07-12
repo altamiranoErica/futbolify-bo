@@ -16,6 +16,8 @@ public class TrackResponse {
     private Boolean isPlaying;
     private Integer progressMS;
 
+    private Integer votesCount;
+
     public TrackResponse() { }
 
     public TrackResponse(TrackResult result) {
@@ -96,5 +98,13 @@ public class TrackResponse {
 
     public void setAlbum(String album) {
         this.album = album;
+    }
+
+    public Integer getVotesCount() {
+        return votesCount;
+    }
+
+    public void setVotesCount(Integer votesCount) {
+        this.votesCount = votesCount;
     }
 }

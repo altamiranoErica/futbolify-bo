@@ -78,7 +78,7 @@ public class PollService implements JSONMapperUtil<PollResult>{
         taskScheduler.schedule(new PollTask(this, poll), new Date(System.currentTimeMillis() + expireTime));
 
         // ----------------> NOTIFICAR INICIO DE VOTACIÓN
-        SendService.sendPoll("/poll/start_event", new PollResponse(poll));
+        SendService.sendPoll("/poll/start_event", new PollResponse(poll, expireTime));
 
         return new GenericResponse("SUCCESS", "Successfully created poll!");
     }
@@ -87,22 +87,36 @@ public class PollService implements JSONMapperUtil<PollResult>{
         Iterable<Poll> polls = this.pollRepository.findAllByActiveTrue();
         List<PollResponse> result = new ArrayList<>();
         for (Poll poll : polls) {
-            result.add(new PollResponse(poll));
+            result.add(new PollResponse(poll, this.calculateExpirationTime(poll)));
         }
 
         return result;
     }
 
-    public GenericResponse vote(String pollID, String trackID) {
+    private Integer calculateExpirationTime(Poll poll) {
+        Long expirationTime = poll.getCreateTime().getTime() + poll.getExpireTime() - System.currentTimeMillis();
+        return expirationTime.intValue();
+    }
+
+    public PollResponse vote(String pollID, String trackID) {
         Track track = this.trackRepository.findByProviderIDAndPAndPoll_PollID(trackID, UUID.fromString(pollID));
         if (track == null){
-            return new GenericResponse("ERROR", "Selected track does not exist!");
+            return null;
         }
 
         track.addVote();
 
         this.trackRepository.save(track);
-        return new GenericResponse("SUCCESS", "Successful voting added!");
+
+        Optional<Poll> _poll = this.pollRepository.findById(UUID.fromString(pollID));
+        if (!_poll.isPresent()){
+            return null;
+        }
+
+        Poll poll = _poll.get();
+        PollResponse response = new PollResponse().makePartialResultPoll(poll);
+
+        return response;
     }
 
     public void finish(Poll poll) {

@@ -14,17 +14,40 @@ public class PollResponse {
     private String venueID;
     private List<TrackResponse> tracks;
 
+    private Integer expirationTime;
+
+    public PollResponse() {
+        this.tracks = new ArrayList<>();
+    }
+
     public PollResponse(Poll poll) {
+        this();
         this.id = poll.getStringPollID();
         this.venueID = poll.getVenue().getStringVenueID();
         this.makeTrackList(poll.getTracks());
     }
 
+    public PollResponse(Poll poll, Integer expireTime) {
+        this(poll);
+        this.expirationTime = expireTime;
+    }
+
     private void makeTrackList(List<Track> tracks) {
-        this.tracks = new ArrayList<>();
         for (Track track : tracks) {
             this.tracks.add(new TrackResponse(track.getProviderID(), track.getName(), track.getArtist(), track.getImage()));
         }
+    }
+
+    public PollResponse makePartialResultPoll(Poll poll){
+        this.id = poll.getStringPollID();
+        for (Track track : poll.getTracks()) {
+            TrackResponse trackResponse = new TrackResponse(track.getProviderID(), track.getName(), track.getArtist(), track.getImage());
+            trackResponse.setVotesCount(track.getNumberOfVotes());
+
+            this.tracks.add(trackResponse);
+        }
+
+        return this;
     }
 
     public String getId() {
@@ -49,5 +72,13 @@ public class PollResponse {
 
     public void setTracks(List<TrackResponse> tracks) {
         this.tracks = tracks;
+    }
+
+    public Integer getExpirationTime() {
+        return expirationTime;
+    }
+
+    public void setExpirationTime(Integer expirationTime) {
+        this.expirationTime = expirationTime;
     }
 }
