@@ -63,12 +63,14 @@ public class PollService implements JSONMapperUtil<PollResult>{
 
         Poll poll = new Poll();
         poll.setVenue(venue);
+        poll.setAutomatic(pollResult.getAutomatic());
 
         for (TrackResult trackResult : pollResult.getTracks()) {
-            poll.getTracks().add(new Track(trackResult.getId(), trackResult.getName(), trackResult.getArtist(), trackResult.getCode()));
+            poll.getTracks().add(new Track(trackResult.getId(), trackResult.getName(),
+                    trackResult.getArtist(), trackResult.getCode(), trackResult.getPosition()));
         }
 
-        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 10000;
+        Integer expireTime = currentTrack.getDuration() - currentTrack.getProgressMS() - 7000;
 
         poll.setExpireTime(expireTime);
         poll.setPositionWinnerTrack(currentTrack.getPosition() + 1);
@@ -127,18 +129,25 @@ public class PollService implements JSONMapperUtil<PollResult>{
         poll.setActive(false);
         this.pollRepository.save(poll);
 
+        // ----------------> AGREGAR O REORDENAR PISTA GANADORA
+        Boolean response;
+
+        if(poll.getAutomatic()){
+            response = this.providerService.reorderPlaylistsTracks(poll.getVenue(), track.getOriginalPosition(), poll.getPositionWinnerTrack());
+        } else {
+            response = this.providerService.addTrackToPlaylist(poll.getVenue(), track.getProviderID(), poll.getPositionWinnerTrack());
+        }
+
+        if(!response){
+            System.out.println("ERROR AL AGREGAR PISTA A LA LISTA!\n");
+        }
+
         // ----------------> NOTIFICAR FIN DE VOTACIÓN
         VenueResponse venueResponse = new VenueResponse();
         venueResponse.setId(poll.getVenue().getStringVenueID());
         venueResponse.setTrack(new TrackResponse(track));
 
         SendService.sendVenue("/poll/finish_event", venueResponse);
-
-        // ----------------> AGREGAR PISTA GANADORA A LA LISTA
-        Boolean response = this.providerService.addTrackToPlaylist(poll.getVenue(), track.getProviderID(), poll.getPositionWinnerTrack());
-        if(!response){
-            System.out.println("ERROR AL AGREGAR PISTA A LA LISTA!\n");
-        }
     }
 
     private Track getWinnerTrack(UUID pollID) {

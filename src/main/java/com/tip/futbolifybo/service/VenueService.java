@@ -85,6 +85,7 @@ public class VenueService implements JSONMapperUtil<VenueResult>{
 
             if(trackResult != null) {
                 TrackResponse trackResponse = new TrackResponse();
+                trackResponse.setId(trackResult.getId());
                 trackResponse.setName(trackResult.getName());
                 trackResponse.setCode(trackResult.getCode());
                 trackResponse.setArtist(trackResult.getArtist());

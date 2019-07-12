@@ -23,6 +23,7 @@ import com.wrapper.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackReq
 import com.wrapper.spotify.requests.data.playlists.AddTracksToPlaylistRequest;
 import com.wrapper.spotify.requests.data.playlists.GetListOfCurrentUsersPlaylistsRequest;
 import com.wrapper.spotify.requests.data.playlists.GetPlaylistsTracksRequest;
+import com.wrapper.spotify.requests.data.playlists.ReorderPlaylistsTracksRequest;
 import com.wrapper.spotify.requests.data.search.simplified.SearchTracksRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -258,7 +259,7 @@ public class SpotifyProviderService {
             Integer trackNumber = this.getRandomPosition(trackPositions, minPosition, playlistTrackPaging.getTotal());
             PlaylistTrack playlistTrack = playlistTrackPaging.getItems()[trackNumber];
 
-            TrackResult track = new TrackResult().loadFewInfo(playlistTrack.getTrack());
+            TrackResult track = new TrackResult().loadFewInfo(playlistTrack.getTrack(), trackNumber);
             result.add(track);
             trackPositions.add(trackNumber);
         }
@@ -304,4 +305,21 @@ public class SpotifyProviderService {
     }
 
 
+    public Boolean reorderPlaylistsTracks(Venue venue, Integer originalPosition, Integer positionTrack) {
+        SpotifyApi spotifyApi = this.getSpotifyApiFromVenue(venue);
+        if(spotifyApi == null) return null;
+
+        ReorderPlaylistsTracksRequest reorderPlaylistsTracksRequest = spotifyApi.
+                reorderPlaylistsTracks(venue.getPlaylistID(), originalPosition, positionTrack)
+                .build();
+
+        try {
+            reorderPlaylistsTracksRequest.execute();
+        } catch (IOException | SpotifyWebApiException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
 }

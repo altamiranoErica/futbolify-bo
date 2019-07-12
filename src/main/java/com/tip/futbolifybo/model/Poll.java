@@ -21,6 +21,8 @@ public class Poll implements Serializable {
 
     private Timestamp createTime;
 
+    private Boolean automatic;
+
     private Boolean active;
 
     @ManyToOne()
@@ -79,6 +81,14 @@ public class Poll implements Serializable {
 
     public void setTracks(List<Track> tracks) {
         this.tracks = tracks;
+    }
+
+    public Boolean getAutomatic() {
+        return automatic;
+    }
+
+    public void setAutomatic(Boolean automatic) {
+        this.automatic = automatic;
     }
 
     public Boolean getActive() {

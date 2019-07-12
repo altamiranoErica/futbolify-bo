@@ -22,16 +22,19 @@ public class Track implements Serializable {
 
     private Integer numberOfVotes;
 
+    private Integer originalPosition;
+
     public Track(){
         this.numberOfVotes = 0;
     }
 
-    public Track(String providerID, String name, String artist, String image) {
+    public Track(String providerID, String name, String artist, String image, Integer position) {
         this();
         this.providerID = providerID;
         this.name = name;
         this.artist = artist;
         this.image = image;
+        this.originalPosition = position;
     }
 
     public UUID getTrackID() {
@@ -86,4 +89,11 @@ public class Track implements Serializable {
         this.numberOfVotes += 1;
     }
 
+    public Integer getOriginalPosition() {
+        return originalPosition;
+    }
+
+    public void setOriginalPosition(Integer originalPosition) {
+        this.originalPosition = originalPosition;
+    }
 }

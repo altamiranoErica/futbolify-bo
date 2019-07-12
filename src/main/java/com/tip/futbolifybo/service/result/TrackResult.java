@@ -29,7 +29,7 @@ public class TrackResult {
         this.setUri(item.getUri());
         this.setId(item.getId());
         this.setAlbumID(item.getAlbum().getId());
-        this.setCode("https://open.spotify.com/embed/track/" + this.getId());
+        this.setCode("https://open.spotify.com/embed?uri=spotify:track:" + this.getId());
         this.setIsPlaying(isPlaying);
         this.setProgressMS(progressMS);
         this.setDuration(item.getDurationMs());
@@ -148,6 +148,13 @@ public class TrackResult {
         if(artists != null && artists.length > 0) this.setArtist(artists[0].getName());
 
         this.setDuration(track.getDurationMs());
+
+        return this;
+    }
+
+    public TrackResult loadFewInfo(Track track, Integer position) {
+        this.loadFewInfo(track);
+        this.position = position;
 
         return this;
     }

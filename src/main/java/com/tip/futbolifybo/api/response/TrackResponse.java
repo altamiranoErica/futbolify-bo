@@ -17,6 +17,7 @@ public class TrackResponse {
     private Integer progressMS;
 
     private Integer votesCount;
+    private Integer position;
 
     public TrackResponse() { }
 
@@ -28,6 +29,7 @@ public class TrackResponse {
         this.album = result.getAlbumName();
         this.isPlaying = result.getIsPlaying();
         this.progressMS = result.getProgressMS();
+        this.position = result.getPosition();
     }
 
     public TrackResponse(String providerID, String name, String artist, String image) {
@@ -40,7 +42,7 @@ public class TrackResponse {
     public TrackResponse(Track track) {
         this.isPlaying = true;
         this.id = track.getProviderID();
-        this.code = "https://open.spotify.com/embed/track/" + track.getProviderID();
+        this.code = "https://open.spotify.com/embed?uri=spotify:track:" + track.getProviderID();
         this.name = track.getName();
     }
 
@@ -106,5 +108,13 @@ public class TrackResponse {
 
     public void setVotesCount(Integer votesCount) {
         this.votesCount = votesCount;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

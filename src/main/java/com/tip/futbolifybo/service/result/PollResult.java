@@ -10,6 +10,7 @@ public class PollResult {
     private String venueID;
     private List<TrackResult> tracks;
     private String expirationTime;
+    private Boolean automatic;
 
     public String getVenueID() {
         return venueID;
@@ -33,5 +34,13 @@ public class PollResult {
 
     public void setExpirationTime(String expirationTime) {
         this.expirationTime = expirationTime;
+    }
+
+    public Boolean getAutomatic() {
+        return automatic;
+    }
+
+    public void setAutomatic(Boolean automatic) {
+        this.automatic = automatic;
     }
 }
